@@ -17,15 +17,19 @@ import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.LinkedList;
 
 /**
  * El applet AppletAnimacion muestra una animación en pantalla.
  */
 public class AppletExamen1 extends Applet implements Runnable, KeyListener {
 
+    private Image dbImage;    // Imagen a proyectar
+    private Graphics dbg;	// Objeto grafico
+
     //Personajes en el juego
     Bueno ninja;
-    Malo paraguas;
+    LinkedList<Malo> malos;
 
 //Objeto de la clase Animacion para el manejo de la animación
     private Animacion anim;
@@ -40,9 +44,9 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
      */
     public void init() {
         ninja = new Bueno();
-        paraguas = new Malo();
-        ninja.setPosX(15);
-        ninja.setPosY(15);
+        malos = generateRandomMaloList(10, 10);
+        ninja.setPosX(getWidth() / 2 - ninja.getAncho() / 2);
+        ninja.setPosY(getHeight() - ninja.getAlto());
 
         //Pinta el fondo del Applet de color amarillo		
         setBackground(Color.yellow);
@@ -87,15 +91,18 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
 
         //Ciclo principal del Applet. Actualiza y despliega en pantalla la animación hasta que el Applet sea cerrado
         while (true) {
-
             //Actualiza la animación
             actualiza();
+
+            //Manda a llamar checa colision
+            checaColision();
+            
             //Manda a llamar al método paint() para mostrar en pantalla la animación
             repaint();
 
-            //Hace una pausa de 200 milisegundos
+            //Hace una pausa de 50 milisegundos
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
             }
         }
@@ -117,6 +124,10 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
         ninja.move();
         ninja.updateAnimation(tiempoTranscurrido);
 
+        for (Malo paraguas : malos) {
+            paraguas.fall();
+            paraguas.updateAnimation(tiempoTranscurrido);
+        }
         try {
             Thread.sleep(20);
         } catch (InterruptedException ex) {
@@ -125,14 +136,95 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
     }
 
     /**
+     * Metodo usado para checar las colisiones del objeto elefante y asteroid
+     * con las orillas del <code>Applet</code>.
+     */
+    public void checaColision() {
+        for (Malo paraguas : malos) {
+        }
+
+        int bounceoff = ninja.getSpeed();
+        //checks ninja collision with applet
+        if (ninja.getPosX() < 0) {
+            ninja.moveRight();
+            ninja.move();
+        } else if (ninja.getPosX() > getWidth() - ninja.getAncho()) {
+            ninja.moveLeft();
+            ninja.move();
+        }
+
+    }
+
+    /**
+     * Metodo <I>update</I> sobrescrito de la clase <code>Applet</code>,
+     * heredado de la clase Container.<P>
+     * En este metodo lo que hace es actualizar el contenedor
+     *
+     * @param g es el <code>objeto grafico</code> usado para dibujar.
+     */
+    public void update(Graphics g) {
+        // Inicializan el DoubleBuffer
+        if (dbImage == null) {
+            dbImage = createImage(this.getSize().width, this.getSize().height);
+            dbg = dbImage.getGraphics();
+        }
+
+        // Actualiza la imagen de fondo.
+        dbg.setColor(getBackground());
+        dbg.fillRect(0, 0, this.getSize().width, this.getSize().height);
+
+        // Actualiza el Foreground.
+        dbg.setColor(getForeground());
+        paint(dbg);
+
+        // Dibuja la imagen actualizada
+        g.drawImage(dbImage, 0, 0, this);
+    }
+
+    /**
      * El método paint() muestra en pantalla la animación
      */
     public void paint(Graphics g) {
         // Muestra en pantalla el cuadro actual de la animación
-        if (ninja != null) {
+        if (ninja != null && malos != null) {
             g.drawImage(ninja.getImagen(), ninja.getPosX(), ninja.getPosY(), this);
+            for (Malo paraguas : malos) {
+                g.drawImage(paraguas.getImagen(), paraguas.getPosX(), paraguas.getPosY(), this);
+            }
+        } else {
+            g.drawString("Cargando...", getWidth() / 2, getHeight() / 2);
         }
 
+    }
+
+    /**
+     * Metodo crearMalo que crea un malo en una posicion aleatoria fuera del
+     * applet en la parte de arriba.
+     *
+     * @return objeto de clase <code>Malo</code>
+     */
+    public Malo crearMalo() {
+        Malo nuevoParaguas = new Malo();
+        nuevoParaguas.randomReset(getWidth());
+
+        return nuevoParaguas;
+    }
+
+    /**
+     * Metodo generateRandomMaloList que genera una lista de malos entre ciertos
+     * limites.
+     *
+     * @param lower minima cantidad de malos a crear tipo <code>int</code>
+     * @param upper maxima cantidad de malos a crear tipo <code>int</code>
+     * @return
+     */
+    public LinkedList<Malo> generateRandomMaloList(int lower, int upper) {
+        int R = (int) (Math.random() * (upper - lower)) + lower;
+        LinkedList<Malo> malos = new LinkedList<Malo>();
+        for (int i = 0; i < R; i++) {
+            malos.add(crearMalo());
+        }
+        return malos;
     }
 
     @Override

@@ -16,7 +16,7 @@ public class Bueno extends Base {
 
     private final String DESAPARECE = "DESAPARECE";
     private final String PAUSADO = "PAUSADO";
-    private final int DEFAULT_SPEED = 5;
+    private final int DEFAULT_SPEED = 10;
 
     private int speed;
 
@@ -76,7 +76,7 @@ public class Bueno extends Base {
         setAnimacionCaminarIzquierda(izquierda);
 
         //direccion inicial del ninja
-        setHaciaLaDerecha(true);
+        setCorriendoAnimacionBasica(true);
     }
 
     public Bueno(int posX, int posY, Animacion animacionBasica) {

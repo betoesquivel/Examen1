@@ -33,7 +33,7 @@ public class Base {
     private boolean haciaLaDerecha; //true cuando se está moviendo hacia la derecha
     private boolean haciaLaIzquierda; //true cuando se está moviendo hacia la izquierda
     private boolean colisionando; //true cuando se está reproduciendo animacion de colision
-    
+
     /* CONSTRUCTORES */
     /**
      * Metodo constructor usado para crear el objeto con valores default
@@ -43,9 +43,9 @@ public class Base {
         this.posX = 0;
         this.posY = 0;
         this.animacionBasica = animacionCaminarDerecha = animacionCaminarIzquierda = animacionColision = null;
-        
+
     }
-    
+
     /**
      * Metodo constructor usado para crear el objeto
      *
@@ -84,16 +84,16 @@ public class Base {
     public Rectangle getPerimetro() {
         return new Rectangle(getPosX(), getPosY(), getAncho(), getAlto());
     }
-    
-    public void updateAnimation(long tiempoTranscurrido){
-        Animacion anim = new Animacion(); 
-        if(isCorriendoAnimacionBasica()){
-            anim = animacionBasica; 
-        }else if(isHaciaLaDerecha()){
+
+    public void updateAnimation(long tiempoTranscurrido) {
+        Animacion anim = new Animacion();
+        if (isCorriendoAnimacionBasica()) {
+            anim = animacionBasica;
+        } else if (isHaciaLaDerecha()) {
             anim = animacionCaminarDerecha;
-        }else if(isHaciaLaIzquierda()){
+        } else if (isHaciaLaIzquierda()) {
             anim = animacionCaminarIzquierda;
-        }else if(isColisionando()){
+        } else if (isColisionando()) {
             anim = animacionColision;
         }
         //Actualiza la animación en base al tiempo transcurrido
@@ -102,6 +102,12 @@ public class Base {
     /* COMPORTAMIENTOS */
 
     /* GETTERS Y SETTERS */
+    /**
+     * Metodo getPosX 
+     * Regresa la posición en x del objeto
+     *
+     * @return posX que es la posición X de tipo <code>int</code>
+     */
     public int getPosX() {
         return posX;
     }
@@ -109,7 +115,13 @@ public class Base {
     public void setPosX(int posX) {
         this.posX = posX;
     }
-
+    
+    /**
+     * Metodo getPosY
+     * Regresa la posición en y del objeto
+     *
+     * @return posY que es la posición Y de tipo <code>int</code>
+     */
     public int getPosY() {
         return posY;
     }
@@ -121,7 +133,7 @@ public class Base {
     /**
      * Regresa la imagen del cuadro actual animándose.
      *
-     * @return
+     * @return Imagen de tipo <code>Image</code>
      */
     public Image getImagen() {
         if (corriendoAnimacionBasica) {
@@ -155,6 +167,12 @@ public class Base {
         return (new ImageIcon(getImagen())).getIconHeight();
     }
 
+    /**
+     * Metodo de acceso que regresa la animacionBasica
+     * 
+     * @return un objeto de la clase <code>Animacion</code> que tiene 
+     * la animación básica. 
+     */
     public Animacion getAnimacionBasica() {
         return animacionBasica;
     }
@@ -163,6 +181,12 @@ public class Base {
         this.animacionBasica = animacionBasica;
     }
 
+    /**
+     * Metodo de acceso que regresa la animacion de caminata hacia la izquierda
+     * 
+     * @return objeto de la clase <code>Animacion</code> que tiene la animación
+     * para caminar hacia la izquierda
+     */
     public Animacion getAnimacionCaminarIzquierda() {
         return animacionCaminarIzquierda;
     }
@@ -171,6 +195,12 @@ public class Base {
         this.animacionCaminarIzquierda = animacionCaminarIzquierda;
     }
 
+    /**
+     * Metodo de acceso que regresa la animacion de caminata hacia la derecha
+     * 
+     * @return objeto de la clase <code>Animacion</code> que tiene la animación
+     * para caminar hacia la derecha
+     */
     public Animacion getAnimacionCaminarDerecha() {
         return animacionCaminarDerecha;
     }
@@ -179,18 +209,35 @@ public class Base {
         this.animacionCaminarDerecha = animacionCaminarDerecha;
     }
 
+    /**
+     * Metodo de acceso que regresa la animacion de colisión
+     * 
+     * @return objeto de la clase <code>Animacion</code> que tiene la animación
+     * para colisionar.
+     */
     public Animacion getAnimacionColision() {
         return animacionColision;
     }
 
+    /**
+     * Metodo setAnimacionColision
+     * @param animacionColision 
+     */
     public void setAnimacionColision(Animacion animacionColision) {
         this.animacionColision = animacionColision;
     }
-    
+
     public boolean isCorriendoAnimacionBasica() {
         return corriendoAnimacionBasica;
     }
 
+    /**
+     * Metodo de modificación para el boolean que dice si se está
+     * corriendo una animación básica
+     * 
+     * @param corriendoAnimacionBasica es una variable de tipo <code>boolean</code>
+     * que indica el valor que la booleana de clase debe tomar.
+     */
     public void setCorriendoAnimacionBasica(boolean corriendoAnimacionBasica) {
         this.corriendoAnimacionBasica = corriendoAnimacionBasica;
     }
@@ -199,6 +246,13 @@ public class Base {
         return haciaLaDerecha;
     }
 
+    /**
+     * Metodo de modificación para el boolean que dice si se está
+     * corriendo una animación de caminar hacia la derecha
+     * 
+     * @param haciaLaDerecha es una variable de tipo <code>boolean</code>
+     * que indica el valor que la booleana de clase debe tomar.
+     */
     public void setHaciaLaDerecha(boolean haciaLaDerecha) {
         this.haciaLaDerecha = haciaLaDerecha;
     }
@@ -207,6 +261,13 @@ public class Base {
         return haciaLaIzquierda;
     }
 
+    /**
+     * Metodo de modificación para el boolean que dice si se está
+     * corriendo una animación de caminar hacia la izquierda
+     * 
+     * @param haciaLaIzquierda es una variable de tipo <code>boolean</code>
+     * que indica el valor que la booleana de clase debe tomar.
+     */
     public void setHaciaLaIzquierda(boolean haciaLaIzquierda) {
         this.haciaLaIzquierda = haciaLaIzquierda;
     }
@@ -215,9 +276,16 @@ public class Base {
         return colisionando;
     }
 
+    /**
+     * Metodo de modificación para el boolean que dice si se está
+     * corriendo una animación de colisión
+     * 
+     * @param colisionando es una variable de tipo <code>boolean</code>
+     * que indica el valor que la booleana de clase debe tomar.
+     */
     public void setColisionando(boolean colisionando) {
         this.colisionando = colisionando;
-    }    
+    }
     /* FIN DE GETTERS Y SETTERS */
 
 }// Fin de la clase Base
