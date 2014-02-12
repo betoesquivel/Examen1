@@ -31,10 +31,10 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
     private Bueno ninja;    //objeto bueno, controlable con el teclado
     private LinkedList<Malo> malos; //lista de malos
 
-    //marcador
-    private int score; 
-   
-    
+    //marcador y pausa
+    private int score;
+    private boolean pausado; 
+
     //Variables de control de tiempo de la animación
     private long tiempoActual;
     private long tiempoInicial;
@@ -45,13 +45,19 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
      */
     public void init() {
         ninja = new Bueno();
-        malos = generateRandomMaloList(10, 10);
+
+        //genera lista de malos de tamanio aleatorio
+        //puede ser 6, 10 o 12
+        malos = generateRandomMaloList(6, 10, 12);
         ninja.setPosX(getWidth() / 2 - ninja.getAncho() / 2);
-        ninja.setPosY(getHeight() - ninja.getAlto());
+        ninja.setPosY(getHeight() / 2 - ninja.getAlto() / 2);
 
         //inicializo el marcador en 0
-        score = 0; 
+        score = 0;
         
+        //el juego no esta pausado
+        pausado = false; 
+
         //Pinta el fondo del Applet de color amarillo		
         setBackground(Color.yellow);
         addKeyListener(this);
@@ -147,15 +153,15 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
         for (Malo paraguas : malos) {
             if (paraguas.intersecta(ninja)) {
                 paraguas.collide(getWidth());
-                score += 10; 
+                score += 10;
             }
 
             /*
-            //Checa colision con el applet
-            if (paraguas.getPosY() > (getHeight() - paraguas.getAlto())) {
-                paraguas.collide(getWidth());
-            }
-            */
+             //Checa colision con el applet
+             if (paraguas.getPosY() > (getHeight() - paraguas.getAlto())) {
+             paraguas.collide(getWidth());
+             }
+             */
         }
 
         int bounceoff = ninja.getSpeed();
@@ -206,7 +212,7 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
             for (Malo paraguas : malos) {
                 g.drawImage(paraguas.getImagen(), paraguas.getPosX(), paraguas.getPosY(), this);
             }
-            g.drawString("Score: " + score, 25, 25); 
+            g.drawString("Score: " + score, 25, 25);
         } else {
             g.drawString("Cargando...", getWidth() / 2, getHeight() / 2);
         }
@@ -221,26 +227,39 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
      */
     public Malo crearMalo() {
         Malo nuevoParaguas = new Malo();
-        
+
         //Posiciona al nuevo paraguas aleatoriamente en la parte superior del applet
         nuevoParaguas.randomReset(getWidth());
-        
+
         //establece la velocidad del objeto de manera aleatoria entre 3 y 6 px
         nuevoParaguas.setRandomSpeed(3, 6);
-        
+
         return nuevoParaguas;
     }
 
     /**
-     * Metodo generateRandomMaloList que genera una lista de malos entre ciertos
-     * limites.
+     * Metodo generateRandomMaloList que genera una lista de malos, escogiendo
+     * entre 3 tamanios enviados como parametro.
      *
-     * @param lower minima cantidad de malos a crear tipo <code>int</code>
-     * @param upper maxima cantidad de malos a crear tipo <code>int</code>
-     * @return
+     * @param easy minima cantidad de malos a crear tipo <code>int</code>
+     * @param medium mediana cantidad de malos a crear tipo <code>int</code>
+     * @param hard maxima cantidad de malos a crear tipo <code>int</code>
+     * @return objeto de tipo <code>LinkedList</code> de la clase Malo con los
+     * malos del juego ya con su speed y posiciones aleatorias.
      */
-    public LinkedList<Malo> generateRandomMaloList(int lower, int upper) {
-        int R = (int) (Math.random() * (upper - lower)) + lower;
+    public LinkedList<Malo> generateRandomMaloList(int easy, int medium, int hard) {
+        int R = (int) (Math.random() * (3 - 1)) + 1;
+        switch (R) {
+            case 1:
+                R = easy;
+                break;
+            case 2:
+                R = medium;
+                break;
+            case 3:
+                R = hard;
+                break;
+        }
         LinkedList<Malo> malos = new LinkedList<Malo>();
         for (int i = 0; i < R; i++) {
             malos.add(crearMalo());
@@ -250,7 +269,10 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //presiono p
+        if(e.getKeyCode() == KeyEvent.VK_P){
+            pausado = true; 
+        }
     }
 
     @Override
