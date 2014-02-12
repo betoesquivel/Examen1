@@ -67,8 +67,6 @@ public class Malo extends Base {
         //direccion inicial del malo
         setCorriendoAnimacionBasica(true);
 
-        speed = DEFAULT_SPEED;
-
     }
 
     public Malo(int posX, int posY, Animacion animacionBasica) {
@@ -81,12 +79,13 @@ public class Malo extends Base {
 
     /* COMPORTAMIENTOS */
     /**
-     * Metodo collide que actualiza la posicion del paraguas y 
-     * 
+     * Metodo collide que actualiza la posicion del paraguas y
+     *
      */
-    public void collide(int appletWidth){
+    public void collide(int appletWidth) {
         randomReset(appletWidth);
     }
+
     /**
      * Método fall
      *
@@ -94,10 +93,29 @@ public class Malo extends Base {
      * que caiga.
      */
     public void fall() {
-        setPosY(getPosY() + 10);
+        setPosY(getPosY() + speed);
     }
 
-    public void randomReset(int appletWidth){
+    /**
+     * Metodo setRandomSpeed
+     * 
+     * Cambia la velocidad del objeto a un numero aleatorio
+     * entre los parametros enviados.
+     * @param lower velocidad minima de tipo <code>int</code>
+     * @param upper velocidad maxima de tipo <code>int</code>
+     */
+    public void setRandomSpeed(int lower, int upper) {
+        int R = (int) (Math.random() * (upper - lower)) + lower;
+        setSpeed(R);
+    }
+
+    /**
+     * Metodo randomReset Resetea la posicion del objeto afuera del applet en
+     * todo X
+     *
+     * @param appletWidth
+     */
+    public void randomReset(int appletWidth) {
         //formula random
         //Math.random() * (upper - lower)) + lower
         setPosX((int) (Math.random() * appletWidth));
@@ -110,6 +128,7 @@ public class Malo extends Base {
     }
     /* COMPORTAMIENTOS */
     /* SETTERS Y GETTERS */
+
     /**
      * Metodo getCont regresa el contador que es una variable de clase
      *

@@ -28,12 +28,13 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
     private Graphics dbg;	// Objeto grafico
 
     //Personajes en el juego
-    Bueno ninja;
-    LinkedList<Malo> malos;
+    private Bueno ninja;    //objeto bueno, controlable con el teclado
+    private LinkedList<Malo> malos; //lista de malos
 
-//Objeto de la clase Animacion para el manejo de la animación
-    private Animacion anim;
-
+    //marcador
+    private int score; 
+   
+    
     //Variables de control de tiempo de la animación
     private long tiempoActual;
     private long tiempoInicial;
@@ -48,6 +49,9 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
         ninja.setPosX(getWidth() / 2 - ninja.getAncho() / 2);
         ninja.setPosY(getHeight() - ninja.getAlto());
 
+        //inicializo el marcador en 0
+        score = 0; 
+        
         //Pinta el fondo del Applet de color amarillo		
         setBackground(Color.yellow);
         addKeyListener(this);
@@ -143,11 +147,15 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
         for (Malo paraguas : malos) {
             if (paraguas.intersecta(ninja)) {
                 paraguas.collide(getWidth());
+                score += 10; 
             }
 
+            /*
+            //Checa colision con el applet
             if (paraguas.getPosY() > (getHeight() - paraguas.getAlto())) {
                 paraguas.collide(getWidth());
             }
+            */
         }
 
         int bounceoff = ninja.getSpeed();
@@ -198,6 +206,7 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
             for (Malo paraguas : malos) {
                 g.drawImage(paraguas.getImagen(), paraguas.getPosX(), paraguas.getPosY(), this);
             }
+            g.drawString("Score: " + score, 25, 25); 
         } else {
             g.drawString("Cargando...", getWidth() / 2, getHeight() / 2);
         }
@@ -212,8 +221,13 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
      */
     public Malo crearMalo() {
         Malo nuevoParaguas = new Malo();
+        
+        //Posiciona al nuevo paraguas aleatoriamente en la parte superior del applet
         nuevoParaguas.randomReset(getWidth());
-
+        
+        //establece la velocidad del objeto de manera aleatoria entre 3 y 6 px
+        nuevoParaguas.setRandomSpeed(3, 6);
+        
         return nuevoParaguas;
     }
 
