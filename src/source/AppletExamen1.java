@@ -96,7 +96,7 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
 
             //Manda a llamar checa colision
             checaColision();
-            
+
             //Manda a llamar al método paint() para mostrar en pantalla la animación
             repaint();
 
@@ -141,6 +141,13 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
      */
     public void checaColision() {
         for (Malo paraguas : malos) {
+            if (paraguas.intersecta(ninja)) {
+                paraguas.collide(getWidth());
+            }
+
+            if (paraguas.getPosY() > (getHeight() - paraguas.getAlto())) {
+                paraguas.collide(getWidth());
+            }
         }
 
         int bounceoff = ninja.getSpeed();

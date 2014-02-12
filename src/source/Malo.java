@@ -81,6 +81,13 @@ public class Malo extends Base {
 
     /* COMPORTAMIENTOS */
     /**
+     * Metodo collide que actualiza la posicion del paraguas y 
+     * 
+     */
+    public void collide(int appletWidth){
+        randomReset(appletWidth);
+    }
+    /**
      * Método fall
      *
      * Modifica la posición del objeto malo, aumentando su posición en Y para

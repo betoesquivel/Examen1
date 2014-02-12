@@ -74,7 +74,18 @@ public class Base {
     }
     /* CONSTRUCTORES */
 
+    /**
+     * Checa si el objeto <code>Base</code> intersecta a otro
+     * <code>Base</code>
+     *
+     * @return un valor boleano <code>true</code> si lo intersecta
+     * <code>false</code> en caso contrario
+     */
+    public boolean intersecta(Base obj) {
+        return getPerimetro().intersects(obj.getPerimetro());
+    }
     /* COMPORTAMIENTOS */
+
     /**
      * Metodo de acceso que regresa un nuevo rectangulo
      *
@@ -103,8 +114,7 @@ public class Base {
 
     /* GETTERS Y SETTERS */
     /**
-     * Metodo getPosX 
-     * Regresa la posición en x del objeto
+     * Metodo getPosX Regresa la posición en x del objeto
      *
      * @return posX que es la posición X de tipo <code>int</code>
      */
@@ -115,10 +125,9 @@ public class Base {
     public void setPosX(int posX) {
         this.posX = posX;
     }
-    
+
     /**
-     * Metodo getPosY
-     * Regresa la posición en y del objeto
+     * Metodo getPosY Regresa la posición en y del objeto
      *
      * @return posY que es la posición Y de tipo <code>int</code>
      */
@@ -169,9 +178,9 @@ public class Base {
 
     /**
      * Metodo de acceso que regresa la animacionBasica
-     * 
-     * @return un objeto de la clase <code>Animacion</code> que tiene 
-     * la animación básica. 
+     *
+     * @return un objeto de la clase <code>Animacion</code> que tiene la
+     * animación básica.
      */
     public Animacion getAnimacionBasica() {
         return animacionBasica;
@@ -183,7 +192,7 @@ public class Base {
 
     /**
      * Metodo de acceso que regresa la animacion de caminata hacia la izquierda
-     * 
+     *
      * @return objeto de la clase <code>Animacion</code> que tiene la animación
      * para caminar hacia la izquierda
      */
@@ -197,7 +206,7 @@ public class Base {
 
     /**
      * Metodo de acceso que regresa la animacion de caminata hacia la derecha
-     * 
+     *
      * @return objeto de la clase <code>Animacion</code> que tiene la animación
      * para caminar hacia la derecha
      */
@@ -211,7 +220,7 @@ public class Base {
 
     /**
      * Metodo de acceso que regresa la animacion de colisión
-     * 
+     *
      * @return objeto de la clase <code>Animacion</code> que tiene la animación
      * para colisionar.
      */
@@ -221,7 +230,8 @@ public class Base {
 
     /**
      * Metodo setAnimacionColision
-     * @param animacionColision 
+     *
+     * @param animacionColision
      */
     public void setAnimacionColision(Animacion animacionColision) {
         this.animacionColision = animacionColision;
@@ -232,11 +242,12 @@ public class Base {
     }
 
     /**
-     * Metodo de modificación para el boolean que dice si se está
-     * corriendo una animación básica
-     * 
-     * @param corriendoAnimacionBasica es una variable de tipo <code>boolean</code>
-     * que indica el valor que la booleana de clase debe tomar.
+     * Metodo de modificación para el boolean que dice si se está corriendo una
+     * animación básica
+     *
+     * @param corriendoAnimacionBasica es una variable de tipo
+     * <code>boolean</code> que indica el valor que la booleana de clase debe
+     * tomar.
      */
     public void setCorriendoAnimacionBasica(boolean corriendoAnimacionBasica) {
         this.corriendoAnimacionBasica = corriendoAnimacionBasica;
@@ -247,11 +258,11 @@ public class Base {
     }
 
     /**
-     * Metodo de modificación para el boolean que dice si se está
-     * corriendo una animación de caminar hacia la derecha
-     * 
-     * @param haciaLaDerecha es una variable de tipo <code>boolean</code>
-     * que indica el valor que la booleana de clase debe tomar.
+     * Metodo de modificación para el boolean que dice si se está corriendo una
+     * animación de caminar hacia la derecha
+     *
+     * @param haciaLaDerecha es una variable de tipo <code>boolean</code> que
+     * indica el valor que la booleana de clase debe tomar.
      */
     public void setHaciaLaDerecha(boolean haciaLaDerecha) {
         this.haciaLaDerecha = haciaLaDerecha;
@@ -262,11 +273,11 @@ public class Base {
     }
 
     /**
-     * Metodo de modificación para el boolean que dice si se está
-     * corriendo una animación de caminar hacia la izquierda
-     * 
-     * @param haciaLaIzquierda es una variable de tipo <code>boolean</code>
-     * que indica el valor que la booleana de clase debe tomar.
+     * Metodo de modificación para el boolean que dice si se está corriendo una
+     * animación de caminar hacia la izquierda
+     *
+     * @param haciaLaIzquierda es una variable de tipo <code>boolean</code> que
+     * indica el valor que la booleana de clase debe tomar.
      */
     public void setHaciaLaIzquierda(boolean haciaLaIzquierda) {
         this.haciaLaIzquierda = haciaLaIzquierda;
@@ -277,11 +288,11 @@ public class Base {
     }
 
     /**
-     * Metodo de modificación para el boolean que dice si se está
-     * corriendo una animación de colisión
-     * 
-     * @param colisionando es una variable de tipo <code>boolean</code>
-     * que indica el valor que la booleana de clase debe tomar.
+     * Metodo de modificación para el boolean que dice si se está corriendo una
+     * animación de colisión
+     *
+     * @param colisionando es una variable de tipo <code>boolean</code> que
+     * indica el valor que la booleana de clase debe tomar.
      */
     public void setColisionando(boolean colisionando) {
         this.colisionando = colisionando;
