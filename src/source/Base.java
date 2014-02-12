@@ -28,10 +28,12 @@ public class Base {
     private Animacion animacionBasica; //animacion principal del objeto
     private Animacion animacionCaminarIzquierda; //para caminar hacia la izquierda
     private Animacion animacionCaminarDerecha;  //para caminar hacia la derecha
+    private Animacion animacionColision; //para colisionar
     private boolean corriendoAnimacionBasica; //true cuando está corriendo la animacion basica
     private boolean haciaLaDerecha; //true cuando se está moviendo hacia la derecha
     private boolean haciaLaIzquierda; //true cuando se está moviendo hacia la izquierda
-
+    private boolean colisionando; //true cuando se está reproduciendo animacion de colision
+    
     /* CONSTRUCTORES */
     /**
      * Metodo constructor usado para crear el objeto con valores default
@@ -40,7 +42,7 @@ public class Base {
     public Base() {
         this.posX = 0;
         this.posY = 0;
-        this.animacionBasica = animacionCaminarDerecha = animacionCaminarIzquierda = null;
+        this.animacionBasica = animacionCaminarDerecha = animacionCaminarIzquierda = animacionColision = null;
         
     }
     
@@ -81,6 +83,21 @@ public class Base {
      */
     public Rectangle getPerimetro() {
         return new Rectangle(getPosX(), getPosY(), getAncho(), getAlto());
+    }
+    
+    public void updateAnimation(long tiempoTranscurrido){
+        Animacion anim = new Animacion(); 
+        if(isCorriendoAnimacionBasica()){
+            anim = animacionBasica; 
+        }else if(isHaciaLaDerecha()){
+            anim = animacionCaminarDerecha;
+        }else if(isHaciaLaIzquierda()){
+            anim = animacionCaminarIzquierda;
+        }else if(isColisionando()){
+            anim = animacionColision;
+        }
+        //Actualiza la animación en base al tiempo transcurrido
+        anim.actualiza(tiempoTranscurrido);
     }
     /* COMPORTAMIENTOS */
 
@@ -162,6 +179,14 @@ public class Base {
         this.animacionCaminarDerecha = animacionCaminarDerecha;
     }
 
+    public Animacion getAnimacionColision() {
+        return animacionColision;
+    }
+
+    public void setAnimacionColision(Animacion animacionColision) {
+        this.animacionColision = animacionColision;
+    }
+    
     public boolean isCorriendoAnimacionBasica() {
         return corriendoAnimacionBasica;
     }
@@ -186,5 +211,13 @@ public class Base {
         this.haciaLaIzquierda = haciaLaIzquierda;
     }
 
+    public boolean isColisionando() {
+        return colisionando;
+    }
+
+    public void setColisionando(boolean colisionando) {
+        this.colisionando = colisionando;
+    }    
     /* FIN DE GETTERS Y SETTERS */
+
 }// Fin de la clase Base
