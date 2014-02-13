@@ -18,8 +18,17 @@ public class Bueno extends Base {
     private final String PAUSADO = "PAUSADO";
     private final int DEFAULT_SPEED = 10;
 
-    private int speed;
+    private final int UP = 1;
+    private final int RIGHT = 2;
+    private final int DOWN = 3;
+    private final int LEFT = 4;
+    private final int STOPPED = 0;
 
+    private int speed;
+    private int direction;
+
+    private boolean colision; //true si esta en colision
+    
     //Cuadros
     private URL[] stoppedURLs = {
         this.getClass().getResource("/images/ninjaStopped01_01.png"),
@@ -88,14 +97,83 @@ public class Bueno extends Base {
     }
 
     /* GETTERS y SETTERS */
+    public String getPAUSADO() {
+        return PAUSADO;
+    }
+
+    /**
+     * Getters que regresan la direccion que significa cada cuadrante.
+     *
+     * @return
+     */
+    public int getUP() {
+        return UP;
+    }
+
+    public int getRIGHT() {
+        return RIGHT;
+    }
+
+    public int getDOWN() {
+        return DOWN;
+    }
+
+    public int getLEFT() {
+        return LEFT;
+    }
+
+    public int getSTOPPED() {
+        return STOPPED;
+    }
+
+    /**
+     * Metodo de acceso getSpeed
+     *
+     * regresa la velocidad del objeto
+     *
+     * @return variable speed de tipo <code>int</code> que contiene la velocidad
+     * del objeto.
+     */
     public int getSpeed() {
         return speed;
 
     }
 
+    /**
+     * Metodo de modificacion setSpeed
+     *
+     * que cambia la velocidad del objeto
+     *
+     * @param speed de tipo <code>int</code> que contiene la velocidad del
+     * objeto.
+     */
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+
+    /**
+     * Metodo de modificacion setDirection
+     *
+     * modifica la direccion del objeto
+     *
+     * @param direction variable de tipo <code>int</code> que contiene la
+     * direccion en la que se mueve el objeto
+     */
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
+
+    /**
+     * Metodo de acceso getDirection
+     *
+     * regresa la direccion del objeto
+     *
+     * @return variable de tipo <code>int</code> con la direccion
+     */
+    public int getDirection() {
+        return direction;
+    }
+
     /* GETTERS y SETTERS */
 
     /* COMPORTAMIENTOS */
@@ -117,14 +195,30 @@ public class Bueno extends Base {
         setCorriendoAnimacionBasica(true);
     }
 
+    public void collide(){
+        colision = true; 
+    }
     public void move() {
-        if (isHaciaLaDerecha()) {
-            setPosX(getPosX() + speed);
-        } else if (isHaciaLaIzquierda()) {
-            setPosX(getPosX() - speed);
-        } else {
-            //no hacer nada o poner animacion de detenido
+        switch (direction) {
+            case UP:
+                setPosY(getPosY() - speed);
+                break;
+            case DOWN:
+                setPosY(getPosY() + speed);
+                break;
+            case RIGHT:
+                setPosX(getPosX() + speed);
+                moveRight();
+                break;
+            case LEFT:
+                setPosX(getPosX() - speed);
+                moveLeft();
+                break;
+            default:
+                stop();
+                break;
         }
+
     }
 
 }//Fin de la clase Bueno

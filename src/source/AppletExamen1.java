@@ -11,18 +11,22 @@ package source;
  */
 import javax.swing.ImageIcon;
 import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.net.URL;
 import java.util.LinkedList;
 
 /**
  * El applet AppletAnimacion muestra una animación en pantalla.
  */
-public class AppletExamen1 extends Applet implements Runnable, KeyListener {
+public class AppletExamen1 extends Applet implements Runnable, KeyListener, MouseListener {
 
     private Image dbImage;    // Imagen a proyectar
     private Graphics dbg;	// Objeto grafico
@@ -33,12 +37,19 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
 
     //marcador y pausa
     private int score;
-    private boolean pausado; 
-
+    private boolean pausado;
+    private int cuadranteOprimido;
     //Variables de control de tiempo de la animación
     private long tiempoActual;
     private long tiempoInicial;
     int posX, posY;
+
+    //sonidos
+    private AudioClip sonido;    // Objeto AudioClip
+    private AudioClip bomb;    //Objeto AudioClip 
+    //Se cargan los sonidos.
+    private URL saURL = this.getClass().getResource("/sound/8-bit-explosion.wav");
+    private URL baURL = this.getClass().getResource("/sound/Explosion.wav");
 
     /**
      * El método init() crea la animación que se mostrará en pantalla.
@@ -54,13 +65,18 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
 
         //inicializo el marcador en 0
         score = 0;
-        
+
         //el juego no esta pausado
-        pausado = false; 
+        pausado = false;
+
+        //se cargan los sonidos
+        sonido = getAudioClip(saURL);
+        bomb = getAudioClip(baURL);
 
         //Pinta el fondo del Applet de color amarillo		
         setBackground(Color.yellow);
         addKeyListener(this);
+        addMouseListener(this);
     }
 
     //El método start() inicializa el thread que utiliza el Applet
@@ -101,16 +117,17 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
 
         //Ciclo principal del Applet. Actualiza y despliega en pantalla la animación hasta que el Applet sea cerrado
         while (true) {
-            //Actualiza la animación
-            actualiza();
+            if (!pausado) {
+                //Actualiza la animación
+                actualiza();
 
-            //Manda a llamar checa colision
-            checaColision();
-
+                //Manda a llamar checa colision
+                checaColision();
+            }
             //Manda a llamar al método paint() para mostrar en pantalla la animación
             repaint();
 
-            //Hace una pausa de 50 milisegundos
+            //Hace una pausa de 100 milisegundos
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
@@ -130,12 +147,15 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
 
         //Guarda el tiempo actual
         tiempoActual += tiempoTranscurrido;
-
+        if (cuadranteOprimido != -1) {
+            ninja.setDirection(cuadranteOprimido);
+            cuadranteOprimido = -1;
+        }
         ninja.move();
         ninja.updateAnimation(tiempoTranscurrido);
 
         for (Malo paraguas : malos) {
-            paraguas.fall();
+            paraguas.move();
             paraguas.updateAnimation(tiempoTranscurrido);
         }
         try {
@@ -151,27 +171,45 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
      */
     public void checaColision() {
         for (Malo paraguas : malos) {
-            if (paraguas.intersecta(ninja)) {
-                paraguas.collide(getWidth());
-                score += 10;
+            if (paraguas.isColisionando()) {
+                paraguas.decreaseCollisionCounter();
+                if (paraguas.getCollisionCycles() < 0) {
+                    paraguas.randomResetSide(getHeight(), getWidth());
+                }
+            } else {
+                if (paraguas.intersecta(ninja)) {
+                    paraguas.collideSides();
+                    paraguas.setCont(paraguas.getCont() + 1);
+                    sonido.play();
+                }
             }
 
-            /*
-             //Checa colision con el applet
-             if (paraguas.getPosY() > (getHeight() - paraguas.getAlto())) {
-             paraguas.collide(getWidth());
-             }
-             */
+            //Checa colision con el applet
+            if (paraguas.getLado() == 1 && paraguas.getPosX() > (getWidth() - paraguas.getAncho())) {
+                paraguas.collideSides();
+                paraguas.randomResetSide(getHeight(), getWidth());
+
+            } else if (paraguas.getLado() == 2 && paraguas.getPosX() < 0) {
+                paraguas.collideSides();
+                paraguas.randomResetSide(getHeight(), getWidth());
+            }
+
         }
 
-        int bounceoff = ninja.getSpeed();
-        //checks ninja collision with applet
-        if (ninja.getPosX() < 0) {
+        //checks ninja collision with applet X
+        if (ninja.getPosX() <= 0) {
             ninja.moveRight();
-            ninja.move();
-        } else if (ninja.getPosX() > getWidth() - ninja.getAncho()) {
+            ninja.setDirection(ninja.getRIGHT());
+        } else if (ninja.getPosX() >= getWidth() - ninja.getAncho()) {
             ninja.moveLeft();
-            ninja.move();
+            ninja.setDirection(ninja.getLEFT());
+        }
+        //checks ninja collision with applet Y
+        if (ninja.getPosY() <= 0) {
+            ninja.setDirection(ninja.getDOWN());
+
+        } else if (ninja.getPosY() >= getHeight() - ninja.getAlto()) {
+            ninja.setDirection(ninja.getUP());
         }
 
     }
@@ -208,11 +246,14 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
     public void paint(Graphics g) {
         // Muestra en pantalla el cuadro actual de la animación
         if (ninja != null && malos != null) {
+            if (pausado) {
+                g.drawString(ninja.getPAUSADO(), ninja.getPosX() - ninja.getAncho() / 2, ninja.getPosY() + ninja.getAlto() / 2);
+            }
             g.drawImage(ninja.getImagen(), ninja.getPosX(), ninja.getPosY(), this);
             for (Malo paraguas : malos) {
                 g.drawImage(paraguas.getImagen(), paraguas.getPosX(), paraguas.getPosY(), this);
             }
-            g.drawString("Score: " + score, 25, 25);
+            g.drawString("Score: " + malos.get(0).getCont(), 25, 25);
         } else {
             g.drawString("Cargando...", getWidth() / 2, getHeight() / 2);
         }
@@ -225,11 +266,13 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
      *
      * @return objeto de clase <code>Malo</code>
      */
-    public Malo crearMalo() {
+    public Malo crearMalo(int lado) {
         Malo nuevoParaguas = new Malo();
 
+        nuevoParaguas.setLado(lado);
+
         //Posiciona al nuevo paraguas aleatoriamente en la parte superior del applet
-        nuevoParaguas.randomReset(getWidth());
+        nuevoParaguas.randomResetSide(getHeight(), getWidth());
 
         //establece la velocidad del objeto de manera aleatoria entre 3 y 6 px
         nuevoParaguas.setRandomSpeed(3, 6);
@@ -260,19 +303,21 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
                 R = hard;
                 break;
         }
+
+        int lado = 1;
         LinkedList<Malo> malos = new LinkedList<Malo>();
         for (int i = 0; i < R; i++) {
-            malos.add(crearMalo());
+            if (i >= R / 2) {
+                lado = 2;
+            }
+            malos.add(crearMalo(lado));
         }
         return malos;
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        //presiono p
-        if(e.getKeyCode() == KeyEvent.VK_P){
-            pausado = true; 
-        }
+
     }
 
     @Override
@@ -283,11 +328,64 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener {
             //Presiono flecha derecha
         } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             ninja.moveRight();
+            //presiono p
+        } else if (e.getKeyCode() == KeyEvent.VK_P) {
+            pausado = !pausado;
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         ninja.stop();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent me) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent me) {
+        //Mouse coordinates
+        int mx = me.getX();
+        int my = me.getY();
+
+        //Applet dimensions
+        int w = getWidth();
+        int h = getHeight();
+        if (mx >= w / 2) {
+            //cuadrante 1 o 2
+            if (my >= h / 2) {
+                //cuadrante 2
+                cuadranteOprimido = 2;
+            } else {
+                //cuadrante 1
+                cuadranteOprimido = 1;
+            }
+        } else {
+            //cuadrante 3 o 4
+            if (my >= h / 2) {
+                //cuadrante 3
+                cuadranteOprimido = 3;
+            } else {
+                //cuadrante 4
+                cuadranteOprimido = 4;
+            }
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent me) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent me) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseExited(MouseEvent me) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

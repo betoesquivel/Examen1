@@ -17,9 +17,19 @@ public class Malo extends Base {
     //Variable de clase contador
     private static int cont = -1;
 
+    //Variable con el lado por el que va a entrar (izquierda 1 o derecha 2)
+    private int lado;
+    private final int DEFAULT_LADO = 1;
+
     //Control de movimiento
     private int speed;
     private final int DEFAULT_SPEED = 10;
+    private int direccion;
+
+    //Control de colisiones
+    private boolean inCollision;    
+    private int collisionCycles;    
+    private final int defaultCollisionCycles = 10;
 
     //URLs de cuadros de las animaciones
     private URL[] umbrellaURLs = {
@@ -46,7 +56,7 @@ public class Malo extends Base {
         }
         Animacion main = new Animacion();
         Animacion collision = new Animacion();
-
+        lado = DEFAULT_LADO;
         /*
          Agrega todos los cuadros a la animacion main con 100ms de duracion
          */
@@ -66,13 +76,13 @@ public class Malo extends Base {
 
         //direccion inicial del malo
         setCorriendoAnimacionBasica(true);
-
+        
     }
-
+    
     public Malo(int posX, int posY, Animacion animacionBasica) {
         super(posX, posY, animacionBasica);
     }
-
+    
     public Malo(int posX, int posY, Animacion animacionCaminarIzquierda, Animacion animacionCaminarDerecha) {
         super(posX, posY, animacionCaminarIzquierda, animacionCaminarDerecha);
     }
@@ -87,6 +97,29 @@ public class Malo extends Base {
     }
 
     /**
+     * Metodo collide que actualiza la posicion del paraguas y
+     *
+     */
+    public void collideSides() {
+        setColisionando(true);
+        setCorriendoAnimacionBasica(false);
+        setCollisionCycles(defaultCollisionCycles);
+    }
+
+    /**
+     * Metodo collide que actualiza la posicion del paraguas y
+     *
+     */
+    public void stopCollideSides(int appletHeight, int appletWidth) {
+        
+        randomResetSide(appletHeight, appletWidth);
+    }
+    
+    public void decreaseCollisionCounter() {
+        setCollisionCycles(getCollisionCycles() - 1);
+    }
+
+    /**
      * Método fall
      *
      * Modifica la posición del objeto malo, aumentando su posición en Y para
@@ -97,10 +130,28 @@ public class Malo extends Base {
     }
 
     /**
+     * Método move
+     *
+     * Modifica la posición del objeto malo, aumentando su posición en X para
+     * que caiga.
+     */
+    public void move() {
+        switch (lado) {
+            case 1:
+                setPosX(getPosX() + speed);
+                break;
+            case 2:
+                setPosX(getPosX() - speed);
+                break;
+        }
+    }
+
+    /**
      * Metodo setRandomSpeed
-     * 
-     * Cambia la velocidad del objeto a un numero aleatorio
-     * entre los parametros enviados.
+     *
+     * Cambia la velocidad del objeto a un numero aleatorio entre los parametros
+     * enviados.
+     *
      * @param lower velocidad minima de tipo <code>int</code>
      * @param upper velocidad maxima de tipo <code>int</code>
      */
@@ -118,7 +169,13 @@ public class Malo extends Base {
     public void randomReset(int appletWidth) {
         //formula random
         //Math.random() * (upper - lower)) + lower
-        setPosX((int) (Math.random() * appletWidth));
+
+        //posiciona al objeto en su mitad
+        if (getLado() == 1) {
+            setPosX((int) (Math.random() * (appletWidth / 2 - 1)));
+        } else {
+            setPosX((int) (Math.random() * (appletWidth - appletWidth / 2) + appletWidth / 2));
+        }
         //corrige la posicion si se paso
         if (getPosX() > appletWidth - getAncho()) {
             //correct displacement out of screen
@@ -126,20 +183,90 @@ public class Malo extends Base {
         }
         setPosY((int) (Math.random() * -200));
     }
-    /* COMPORTAMIENTOS */
-    /* SETTERS Y GETTERS */
 
     /**
-     * Metodo getCont regresa el contador que es una variable de clase
+     * Metodo randomReset Resetea la posicion del objeto afuera del applet en
+     * todo X
      *
-     * @return cont contador de tipo <code>int</code>
+     * @param appletWidth
      */
-    public static int getCont() {
-        return cont;
+    public void randomResetSide(int appletHeight, int appletWidth) {
+        //formula random
+        //Math.random() * (upper - lower)) + lower
+
+        //posiciona al objeto en su mitad
+        if (getLado() == 1) {
+            setPosY((int) (Math.random() * (appletHeight / 2 - 1)));
+            setPosX((int) (Math.random() * (0 - appletWidth / 4 - appletWidth / 4)));
+        } else {
+            setPosY((int) (Math.random() * (appletHeight - appletHeight / 2) + appletHeight / 2));
+            setPosX((int) (Math.random() * (appletWidth + appletWidth / 4 - appletWidth) + appletWidth));
+        }
+        //corrige la posicion si se paso
+        if (getPosY() > appletHeight - getAlto()) {
+            //correct displacement out of screen
+            setPosY(appletHeight - getAlto());
+        }
+        
+        setColisionando(false);
+        setCorriendoAnimacionBasica(true);
+        setCollisionCycles(-1);
     }
 
-    public static void setCont(int cont) {
-        Malo.cont = cont;
+    /* COMPORTAMIENTOS */
+    /* SETTERS Y GETTERS */
+    /**
+     * Metodo de modificacion setCont
+     *
+     * que modifica el valor de la variable lado
+     *
+     * @param c variable de tipo <code>int</code> con nuevo score
+     */
+    public void setCont(int c) {
+        this.cont = c;
+    }
+
+    /**
+     * Metodo de acceso getCont
+     *
+     * que regresa
+     *
+     * @return variable de tipo <code>int</code> llamada cont con score
+     */
+    public int getCont() {
+        return cont;
+    }
+    
+    public int getCollisionCycles() {
+        return collisionCycles;
+    }
+    
+    public void setCollisionCycles(int collisionCycles) {
+        this.collisionCycles = collisionCycles;
+    }
+
+    /**
+     * Metodo de modificacion setLado
+     *
+     * que modifica el valor de la variable lado
+     *
+     * @param lado variable de tipo <code>int</code> que puede ser o por la
+     * mitad izquierda (1) o por la mitad derecha (2)
+     */
+    public void setLado(int lado) {
+        this.lado = lado;
+    }
+
+    /**
+     * Metodo de acceso getLado
+     *
+     * que regresa
+     *
+     * @return variable de tipo <code>int</code> llamada lado con lugar por
+     * donde sale
+     */
+    public int getLado() {
+        return lado;
     }
 
     /**
@@ -150,7 +277,7 @@ public class Malo extends Base {
     public int getSpeed() {
         return speed;
     }
-
+    
     public void setSpeed(int speed) {
         this.speed = speed;
     }
@@ -164,7 +291,7 @@ public class Malo extends Base {
     public URL[] getUmbrellaURLs() {
         return umbrellaURLs;
     }
-
+    
     public void setUmbrellaURLs(URL[] umbrellaURLs) {
         this.umbrellaURLs = umbrellaURLs;
     }
@@ -178,10 +305,10 @@ public class Malo extends Base {
     public URL[] getUmbrellaCollisionURLs() {
         return umbrellaCollisionURLs;
     }
-
+    
     public void setUmbrellaCollisionURLs(URL[] umbrellaCollisionURLs) {
         this.umbrellaCollisionURLs = umbrellaCollisionURLs;
     }
     /* SETTERS Y GETTERS */
-
+    
 }
