@@ -57,6 +57,8 @@ public class Malo extends Base {
         Animacion main = new Animacion();
         Animacion collision = new Animacion();
         lado = DEFAULT_LADO;
+        inCollision = false; 
+        collisionCycles = -1;
         /*
          Agrega todos los cuadros a la animacion main con 100ms de duracion
          */
@@ -97,22 +99,14 @@ public class Malo extends Base {
     }
 
     /**
-     * Metodo collide que actualiza la posicion del paraguas y
+     * Metodo collide que pone al objeto en estado de colision.
      *
      */
     public void collideSides() {
-        setColisionando(true);
-        setCorriendoAnimacionBasica(false);
+//        setColisionando(true);
+//        setCorriendoAnimacionBasica(false);
         setCollisionCycles(defaultCollisionCycles);
-    }
-
-    /**
-     * Metodo collide que actualiza la posicion del paraguas y
-     *
-     */
-    public void stopCollideSides(int appletHeight, int appletWidth) {
-        
-        randomResetSide(appletHeight, appletWidth);
+        inCollision = true; 
     }
     
     public void decreaseCollisionCounter() {
@@ -208,13 +202,23 @@ public class Malo extends Base {
             setPosY(appletHeight - getAlto());
         }
         
-        setColisionando(false);
-        setCorriendoAnimacionBasica(true);
+//        setColisionando(false);
+//        setCorriendoAnimacionBasica(true);
         setCollisionCycles(-1);
+        setInCollision(false);
     }
 
     /* COMPORTAMIENTOS */
     /* SETTERS Y GETTERS */
+    
+    public void setInCollision(boolean b){
+        this.inCollision = b; 
+    }
+    
+    public boolean isInCollision(){
+        return this.inCollision;
+    }
+    
     /**
      * Metodo de modificacion setCont
      *

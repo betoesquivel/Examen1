@@ -56,7 +56,8 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener, Mous
      */
     public void init() {
         ninja = new Bueno();
-
+        
+        this.setSize(800,500);
         //genera lista de malos de tamanio aleatorio
         //puede ser 6, 10 o 12
         malos = generateRandomMaloList(6, 10, 12);
@@ -155,8 +156,11 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener, Mous
         ninja.updateAnimation(tiempoTranscurrido);
 
         for (Malo paraguas : malos) {
-            paraguas.move();
+            if (!paraguas.isInCollision()) {
+                paraguas.move();
+            }
             paraguas.updateAnimation(tiempoTranscurrido);
+
         }
         try {
             Thread.sleep(20);
@@ -171,7 +175,7 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener, Mous
      */
     public void checaColision() {
         for (Malo paraguas : malos) {
-            if (paraguas.isColisionando()) {
+            if (paraguas.isInCollision()) {
                 paraguas.decreaseCollisionCounter();
                 if (paraguas.getCollisionCycles() < 0) {
                     paraguas.randomResetSide(getHeight(), getWidth());
@@ -186,11 +190,9 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener, Mous
 
             //Checa colision con el applet
             if (paraguas.getLado() == 1 && paraguas.getPosX() > (getWidth() - paraguas.getAncho())) {
-                paraguas.collideSides();
                 paraguas.randomResetSide(getHeight(), getWidth());
 
             } else if (paraguas.getLado() == 2 && paraguas.getPosX() < 0) {
-                paraguas.collideSides();
                 paraguas.randomResetSide(getHeight(), getWidth());
             }
 
@@ -251,6 +253,9 @@ public class AppletExamen1 extends Applet implements Runnable, KeyListener, Mous
             }
             g.drawImage(ninja.getImagen(), ninja.getPosX(), ninja.getPosY(), this);
             for (Malo paraguas : malos) {
+                if(paraguas.isInCollision()){
+                    g.drawString(ninja.getDESAPARECE(), paraguas.getPosX() - paraguas.getAncho() / 2, paraguas.getPosY() + paraguas.getAlto() / 2);
+                }
                 g.drawImage(paraguas.getImagen(), paraguas.getPosX(), paraguas.getPosY(), this);
             }
             g.drawString("Score: " + malos.get(0).getCont(), 25, 25);

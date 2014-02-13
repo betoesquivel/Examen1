@@ -100,6 +100,10 @@ public class Bueno extends Base {
     public String getPAUSADO() {
         return PAUSADO;
     }
+    
+    public String getDESAPARECE() {
+        return DESAPARECE;
+    }
 
     /**
      * Getters que regresan la direccion que significa cada cuadrante.
